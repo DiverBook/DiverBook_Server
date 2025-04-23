@@ -7,8 +7,12 @@ CREATE TABLE IF NOT EXISTS app_user(
     interests VARCHAR(255),
     places VARCHAR(255),
     about VARCHAR(255),
-    password VARCHAR(255) NOT NULL,
     achievement_rate FLOAT DEFAULT 0.0
+);
+
+CREATE TABLE IF NOT EXISTS password(
+    user_id UUID PRIMARY KEY,
+    password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS collection (

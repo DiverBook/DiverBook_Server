@@ -4,8 +4,9 @@ import ada.divercity.diverbook_server.dto.AuthRequest;
 import ada.divercity.diverbook_server.dto.AuthResponse;
 import ada.divercity.diverbook_server.dto.RegisterUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.TokenBlackList;
-import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
@@ -21,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final UserService userService;
+    private final PasswordRepository passwordRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenBlackListRepository tokenBlackListRepository;
 
@@ -29,7 +31,16 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("User already exists");
         }
 
+        if (request.getPassword() == null || request.getPassword().isEmpty()) {
+            throw new RuntimeException("Password cannot be null or empty");
+        }
+
         UserDto newUserDto = userService.createUser(request);
+        Boolean isAdded = userService.addNewPassword(request.getId(), request.getPassword());
+        if (!isAdded) {
+            userRepository.deleteById(request.getId());
+            throw new RuntimeException("Password cannot be added");
+        }
 
         String accessToken = jwtTokenProvider.generateAccessToken(newUserDto.getId().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(newUserDto.getId().toString());
@@ -51,17 +62,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        User user = userRepository.findById(request.getId())
+        Password password = passwordRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (!new BCryptPasswordEncoder().matches(request.getPassword(), user.getPassword())) {
+        if (!new BCryptPasswordEncoder().matches(request.getPassword(), password.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId().toString());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId().toString());
+        String accessToken = jwtTokenProvider.generateAccessToken(password.getUserId().toString());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(password.getUserId().toString());
 
-        return new AuthResponse(user.getId(), accessToken, refreshToken);
+        return new AuthResponse(password.getUserId(), accessToken, refreshToken);
     }
 
     public AuthResponse logout(String refreshToken) {

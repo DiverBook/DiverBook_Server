@@ -1,6 +1,6 @@
 package ada.divercity.diverbook_server.controller;
 
-import ada.divercity.diverbook_server.dto.UpdatePasswordRequest;
+import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
 import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.service.UserServiceImpl;
@@ -23,11 +23,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
-//    @PostMapping
-//    public ResponseEntity<UserDto> createUser(@RequestBody RegisterUserRequest request) {
-//        UserDto dto = userService.createUser(request);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
 
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(
@@ -39,11 +38,11 @@ public class UserController {
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<UserDto> updateUserPassword(
-            @RequestBody UpdatePasswordRequest request,
+    public ResponseEntity<Boolean> changeUserPassword(
+            @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
-        UserDto updated = userService.changeUserPassword(userId, request);
+        Boolean updated = userService.changeUserPassword(userId, request);
         return ResponseEntity.ok(updated);
     }
 }

@@ -1,10 +1,12 @@
 package ada.divercity.diverbook_server.service;
 
 import ada.divercity.diverbook_server.dto.RegisterUserRequest;
-import ada.divercity.diverbook_server.dto.UpdatePasswordRequest;
+import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
 import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,8 +19,17 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordRepository passwordRepository;
 
     public UserDto createUser(RegisterUserRequest request) {
+        if (userRepository.findById(request.getId()).isPresent()) {
+            throw new RuntimeException("User already exists");
+        }
+
+        if (userRepository.findByUserName(request.getUserName()).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
         User user = User.builder()
                 .id(request.getId())
                 .userName(request.getUserName())
@@ -29,7 +40,6 @@ public class UserServiceImpl implements UserService {
                 .places(request.getPlaces())
                 .about(request.getAbout())
                 .achievementRate(0.0f)
-                .password(encodePassword(request.getPassword()))
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -70,11 +80,28 @@ public class UserServiceImpl implements UserService {
         return convertToDto(userRepository.save(user));
     }
 
-    public UserDto changeUserPassword(UUID id, UpdatePasswordRequest request) {
+    public Boolean addNewPassword(UUID id, String rawPassword) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (passwordRepository.findById(id).isPresent()) {
+            throw new RuntimeException("Password already exists");
+        }
+
+        Password newPassword = Password
+                .builder()
+                .userId(user.getId())
+                .password(encodePassword(rawPassword))
+                .build();
+
+        passwordRepository.save(newPassword);
+
+        return true;
+    }
+    public Boolean changeUserPassword(UUID id, ChangePasswordRequest request) {
+        Password password = passwordRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-        if (!encoder.matches(request.getPassword(), user.getPassword())) {
+        if (!encoder.matches(request.getPassword(), password.getPassword())) {
             throw new RuntimeException("Password is not correct");
         }
 
@@ -82,9 +109,19 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("New password cannot be null or empty");
         }
 
-        user.setPassword(encodePassword(request.getNewPassword()));
+        password.setPassword(encodePassword(request.getNewPassword()));
 
-        return convertToDto(userRepository.save(user));
+        passwordRepository.save(password);
+
+        return true;
+    }
+
+    private String encodePassword(String rawPassword) {
+        if (rawPassword == null || rawPassword.isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
+
+        return new BCryptPasswordEncoder().encode(rawPassword);
     }
 
     private UserDto convertToDto(User user) {
@@ -97,12 +134,8 @@ public class UserServiceImpl implements UserService {
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
-                .password(user.getPassword())
                 .achievementRate(user.getAchievementRate())
                 .build();
     }
 
-    private String encodePassword(String rawPassword) {
-        return new BCryptPasswordEncoder().encode(rawPassword);
-    }
 }

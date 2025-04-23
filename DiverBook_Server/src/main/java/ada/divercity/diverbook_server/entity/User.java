@@ -35,9 +35,6 @@ public class User {
 
     private String about;
 
-    @Column(nullable = false)
-    private String password;
-
     private Float achievementRate;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
