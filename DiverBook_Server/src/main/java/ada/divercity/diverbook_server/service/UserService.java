@@ -14,7 +14,9 @@ public interface UserService {
 
     public UserDto updateUser(UUID id, UpdateUserRequest request);
 
-    public UserDto changeUserPassword(UUID id, UpdatePasswordRequest request);
+    public Boolean addNewPassword(UUID id, String rawPassword);
+
+    public Boolean changeUserPassword(UUID id, ChangePasswordRequest request);
 
     private String encodePassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {

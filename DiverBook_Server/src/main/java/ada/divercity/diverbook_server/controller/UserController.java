@@ -39,11 +39,11 @@ public class UserController {
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<UserDto> updateUserPassword(
-            @RequestBody UpdatePasswordRequest request,
+    public ResponseEntity<Boolean> changeUserPassword(
+            @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
-        UserDto updated = userService.changeUserPassword(userId, request);
+        Boolean updated = userService.changeUserPassword(userId, request);
         return ResponseEntity.ok(updated);
     }
 }
