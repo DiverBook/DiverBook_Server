@@ -11,6 +11,8 @@ public interface UserService {
     public UserDto createUser(RegisterUserRequest request);
     public UserDto getUserById(UUID id);
 
+    public UserDto updateUser(UUID id, UpdateUserRequest request);
+
     private String encodePassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty");

@@ -41,6 +41,34 @@ public class UserServiceImpl implements UserService {
         return UserDto.fromEntity(user);
     }
 
+    public UserDto updateUser(UUID id, UpdateUserRequest request) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserDto updated = UserDto.fromEntity(user);
+
+        if (request.getUserName() != null) {
+            user.setUserName(request.getUserName());
+        }
+        if (request.getUserImage() != null) {
+            user.setUserImage(request.getUserImage());
+        }
+        if (request.getDivisions() != null) {
+            user.setDivisions(request.getDivisions());
+        }
+        if (request.getPhoneNumber() != null) {
+            user.setPhoneNumber(request.getPhoneNumber());
+        }
+        if (request.getInterests() != null) {
+            user.setInterests(request.getInterests());
+        }
+        if (request.getPlaces() != null) {
+            user.setPlaces(request.getPlaces());
+        }
+        if (request.getAbout() != null) {
+            user.setAbout(request.getAbout());
+        }
+
+        return convertToDto(userRepository.save(user));
+    }
 
     private UserDto convertToDto(User user) {
         return UserDto.builder()
