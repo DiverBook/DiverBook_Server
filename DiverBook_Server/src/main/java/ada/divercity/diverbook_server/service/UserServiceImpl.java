@@ -1,6 +1,7 @@
 package ada.divercity.diverbook_server.service;
 
 import ada.divercity.diverbook_server.dto.RegisterUserRequest;
+import ada.divercity.diverbook_server.dto.UpdatePasswordRequest;
 import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.entity.User;
@@ -36,7 +37,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getUserById(UUID id) {
-        System.out.println("getUserById: " + id);
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return UserDto.fromEntity(user);
     }
@@ -66,6 +66,23 @@ public class UserServiceImpl implements UserService {
         if (request.getAbout() != null) {
             user.setAbout(request.getAbout());
         }
+
+        return convertToDto(userRepository.save(user));
+    }
+
+    public UserDto changeUserPassword(UUID id, UpdatePasswordRequest request) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if (!encoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Password is not correct");
+        }
+
+        if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
+            throw new RuntimeException("New password cannot be null or empty");
+        }
+
+        user.setPassword(encodePassword(request.getNewPassword()));
 
         return convertToDto(userRepository.save(user));
     }

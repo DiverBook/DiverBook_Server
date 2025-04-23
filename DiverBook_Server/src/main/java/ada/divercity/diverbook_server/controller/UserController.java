@@ -1,5 +1,6 @@
 package ada.divercity.diverbook_server.controller;
 
+import ada.divercity.diverbook_server.dto.UpdatePasswordRequest;
 import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.service.UserServiceImpl;
@@ -34,6 +35,15 @@ public class UserController {
             @AuthenticationPrincipal UUID userId
     ) {
         UserDto updated = userService.updateUser(userId, request);
+        return ResponseEntity.ok(updated);
+    }
+
+    @PatchMapping("/me/password")
+    public ResponseEntity<UserDto> updateUserPassword(
+            @RequestBody UpdatePasswordRequest request,
+            @AuthenticationPrincipal UUID userId
+    ) {
+        UserDto updated = userService.changeUserPassword(userId, request);
         return ResponseEntity.ok(updated);
     }
 }
