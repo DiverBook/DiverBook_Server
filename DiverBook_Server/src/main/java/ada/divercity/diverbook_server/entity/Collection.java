@@ -21,7 +21,7 @@ public class Collection {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "owener_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
     @ManyToOne
