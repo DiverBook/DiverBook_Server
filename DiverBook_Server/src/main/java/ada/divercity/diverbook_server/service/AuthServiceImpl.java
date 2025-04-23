@@ -4,8 +4,9 @@ import ada.divercity.diverbook_server.dto.AuthRequest;
 import ada.divercity.diverbook_server.dto.AuthResponse;
 import ada.divercity.diverbook_server.dto.RegisterUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
-import ada.divercity.diverbook_server.entity.RefreshToken;
+import ada.divercity.diverbook_server.entity.TokenBlackList;
 import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenBlackListRepository tokenBlackListRepository;
 
     public AuthResponse registerAndLogin(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
@@ -33,8 +34,6 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenProvider.generateAccessToken(newUserDto.getId().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(newUserDto.getId().toString());
 
-        refreshTokenService.storeRefreshToken(newUserDto.getId(), refreshToken);
-
         return new AuthResponse(newUserDto.getId(), accessToken, refreshToken);
     }
 
@@ -43,19 +42,10 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Refresh token is expired or invalid");
         }
 
-        RefreshToken savedToken = refreshTokenService.findByToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
-
         String userId = jwtTokenProvider.validateAndGetUserId(refreshToken); // 유효성 검사 + userId 추출
-
-        if (!userId.equals(savedToken.getUserId().toString())) {
-            throw new RuntimeException("Token mismatch");
-        }
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
-
-        refreshTokenService.storeRefreshToken(UUID.fromString(userId), newRefreshToken);
 
         return new AuthResponse(UUID.fromString(userId), newAccessToken, newRefreshToken);
     }
@@ -71,8 +61,17 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId().toString());
 
-        refreshTokenService.storeRefreshToken(user.getId(), refreshToken);
-
         return new AuthResponse(user.getId(), accessToken, refreshToken);
+    }
+
+    public AuthResponse logout(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new RuntimeException("Refresh token is expired or invalid");
+        }
+
+        String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+        tokenBlackListRepository.save(TokenBlackList.builder().token(refreshToken).build());
+
+        return new AuthResponse(UUID.fromString(userId), null, null);
     }
 }
