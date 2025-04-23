@@ -1,7 +1,7 @@
 package ada.divercity.diverbook_server.service;
 
 import ada.divercity.diverbook_server.dto.RegisterUserRequest;
-import ada.divercity.diverbook_server.dto.UpdatePasswordRequest;
+import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
 import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

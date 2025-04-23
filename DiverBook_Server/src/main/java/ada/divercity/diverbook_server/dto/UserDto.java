@@ -19,7 +19,6 @@ public class UserDto {
     private String interests;
     private String places;
     private String about;
-    private String password;
     private Float achievementRate;
 
     public static UserDto fromEntity(User user) {
