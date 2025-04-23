@@ -41,4 +41,10 @@ public class AuthController {
         AuthResponse tokens = authService.reissueAccessToken(request.getRefreshToken());
         return ResponseEntity.ok(tokens);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
+        AuthResponse tokens = authService.login(request);
+        return ResponseEntity.ok(tokens);
+    }
 }

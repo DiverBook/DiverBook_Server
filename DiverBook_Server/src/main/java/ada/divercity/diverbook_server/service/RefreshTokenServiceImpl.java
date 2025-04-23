@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,5 +24,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                 .token(token)
                 .build();
         refreshTokenRepository.save(refreshToken);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<RefreshToken> findByToken(String token) {
+        return refreshTokenRepository.findByToken(token);
+    }
+
+    @Transactional
+    public void deleteByUserId(UUID userId) {
+        refreshTokenRepository.deleteById(userId);
     }
 }
