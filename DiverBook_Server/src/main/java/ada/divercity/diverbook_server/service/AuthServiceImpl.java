@@ -4,8 +4,9 @@ import ada.divercity.diverbook_server.dto.AuthRequest;
 import ada.divercity.diverbook_server.dto.AuthResponse;
 import ada.divercity.diverbook_server.dto.RegisterUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
-import ada.divercity.diverbook_server.entity.RefreshToken;
+import ada.divercity.diverbook_server.entity.TokenBlackList;
 import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,6 @@ public class AuthServiceImpl implements AuthService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(newUserDto.getId().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(newUserDto.getId().toString());
-
-        refreshTokenService.storeRefreshToken(newUserDto.getId(), refreshToken);
 
         return new AuthResponse(newUserDto.getId(), accessToken, refreshToken);
     }
@@ -63,5 +62,16 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId().toString());
 
         return new AuthResponse(user.getId(), accessToken, refreshToken);
+    }
+
+    public AuthResponse logout(String refreshToken) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new RuntimeException("Refresh token is expired or invalid");
+        }
+
+        String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+        tokenBlackListRepository.save(TokenBlackList.builder().token(refreshToken).build());
+
+        return new AuthResponse(UUID.fromString(userId), null, null);
     }
 }
