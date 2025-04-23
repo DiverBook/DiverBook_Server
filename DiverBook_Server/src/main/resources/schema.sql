@@ -1,19 +1,14 @@
-DROP TABLE IF EXISTS app_user CASCADE;
-DROP TABLE IF EXISTS collection;
-DROP TABLE IF EXISTS badge CASCADE;
-DROP TABLE IF EXISTS user_badge;
-
 CREATE TABLE IF NOT EXISTS app_user(
-id UUID PRIMARY KEY,
-user_name VARCHAR(100) NOT NULL,
-user_image TEXT,
-divisions VARCHAR(255),
-phone_number VARCHAR(20),
-interests VARCHAR(255),
-places VARCHAR(255),
-about VARCHAR(255),
-password VARCHAR(255) NOT NULL,
-achievement_rate FLOAT DEFAULT 0.0
+    id UUID PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL,
+    user_image TEXT,
+    divisions VARCHAR(255),
+    phone_number VARCHAR(20),
+    interests VARCHAR(255),
+    places VARCHAR(255),
+    about VARCHAR(255),
+    password VARCHAR(255) NOT NULL,
+    achievement_rate FLOAT DEFAULT 0.0
 );
 
 CREATE TABLE IF NOT EXISTS collection (
@@ -37,4 +32,9 @@ CREATE TABLE IF NOT EXISTS user_badge(
     badge_code VARCHAR(50) NOT NULL REFERENCES badge(code) ON DELETE CASCADE,
     acquired_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, badge_code)
+);
+
+CREATE TABLE IF NOT EXISTS refresh_token(
+    user_id UUID PRIMARY KEY,
+    token VARCHAR(255)
 );
