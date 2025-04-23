@@ -21,7 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenBlackListRepository tokenBlackListRepository;
 
     public AuthResponse registerAndLogin(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
@@ -43,19 +43,10 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Refresh token is expired or invalid");
         }
 
-        RefreshToken savedToken = refreshTokenService.findByToken(refreshToken)
-                .orElseThrow(() -> new RuntimeException("Refresh token not found"));
-
         String userId = jwtTokenProvider.validateAndGetUserId(refreshToken); // 유효성 검사 + userId 추출
-
-        if (!userId.equals(savedToken.getUserId().toString())) {
-            throw new RuntimeException("Token mismatch");
-        }
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
-
-        refreshTokenService.storeRefreshToken(UUID.fromString(userId), newRefreshToken);
 
         return new AuthResponse(UUID.fromString(userId), newAccessToken, newRefreshToken);
     }
@@ -70,8 +61,6 @@ public class AuthServiceImpl implements AuthService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(user.getId().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId().toString());
-
-        refreshTokenService.storeRefreshToken(user.getId(), refreshToken);
 
         return new AuthResponse(user.getId(), accessToken, refreshToken);
     }

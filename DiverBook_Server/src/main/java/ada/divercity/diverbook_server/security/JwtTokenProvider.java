@@ -71,4 +71,17 @@ public class JwtTokenProvider {
             throw new RuntimeException("JWT token is invalid: ", e);
         }
     }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .verifyWith((SecretKey) key)
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (JwtException e) {
+            return false;
+        }
+    }
+
 }

@@ -24,7 +24,7 @@ import java.util.UUID;
 public class AuthController {
 
     private final AuthService authService;
-    private final RefreshTokenService refreshTokenService;
+    private final TokenBlackListService tokenBlackListService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterUserRequest request) {

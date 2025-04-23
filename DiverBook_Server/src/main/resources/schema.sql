@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS user_badge(
     UNIQUE(user_id, badge_code)
 );
 
-CREATE TABLE IF NOT EXISTS refresh_token(
-    user_id UUID PRIMARY KEY,
-    token VARCHAR(255)
+CREATE TABLE IF NOT EXISTS token_black_list(
+    id SERIAL PRIMARY KEY,
+    invalid_refresh_token VARCHAR(255),
+    invalid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
