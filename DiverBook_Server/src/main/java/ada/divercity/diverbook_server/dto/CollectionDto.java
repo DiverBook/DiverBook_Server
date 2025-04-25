@@ -18,7 +18,7 @@ public class CollectionDto {
     private LocalDateTime foundDate;
     private String memo;
 
-    public CollectionDto fromEntity(Collection collection) {
+    public static CollectionDto fromEntity(Collection collection) {
         return CollectionDto.builder()
                 .id(collection.getId())
                 .owner(collection.getOwner())
