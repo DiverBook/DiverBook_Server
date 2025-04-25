@@ -12,6 +12,8 @@ public interface UserService {
     public UserDto createUser(RegisterUserRequest request);
     public UserDto getUserById(UUID id);
 
+    public Float getAchievementRateById(UUID id);
+
     public UserDto updateUser(UUID id, UpdateUserRequest request);
 
     public Boolean addNewPassword(UUID id, String rawPassword);

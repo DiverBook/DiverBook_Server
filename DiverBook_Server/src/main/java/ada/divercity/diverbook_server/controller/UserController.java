@@ -28,6 +28,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
+    @GetMapping("/{id}/achievement-rate")
+    public ResponseEntity<Float> getAchievementRate(@PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getAchievementRateById(id));
+    }
+
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(
             @RequestBody UpdateUserRequest request,
