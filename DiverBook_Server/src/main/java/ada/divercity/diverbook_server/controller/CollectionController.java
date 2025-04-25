@@ -6,10 +6,7 @@ import ada.divercity.diverbook_server.service.CollectionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -27,5 +24,13 @@ public class CollectionController {
     ) {
         UUID userId = UUID.fromString(authentication.getName());
         return ResponseEntity.ok(collectionService.createCollection(userId, request));
+    }
+
+    @GetMapping
+    public ResponseEntity<Iterable<CollectionDto>> getAllCollections(
+            Authentication authentication
+    ) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return ResponseEntity.ok(collectionService.getAllCollections(userId));
     }
 }
