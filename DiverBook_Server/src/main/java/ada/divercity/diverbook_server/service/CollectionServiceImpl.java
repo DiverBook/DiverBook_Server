@@ -8,8 +8,10 @@ import ada.divercity.diverbook_server.repository.CollectionRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -42,5 +44,18 @@ public class CollectionServiceImpl implements CollectionService {
 
         Collection savedCollection = collectionRepository.save(collection);
         return CollectionDto.fromEntity(savedCollection);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<CollectionDto> getAllCollections(UUID ownerId) {
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner User not found"));
+
+        List<Collection> collections = collectionRepository.findByOwnerId(ownerId);
+
+        return collections.stream()
+                .map(CollectionDto::fromEntity)
+                .toList();
     }
 }
