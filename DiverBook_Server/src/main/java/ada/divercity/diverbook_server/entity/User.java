@@ -35,8 +35,6 @@ public class User {
 
     private String about;
 
-    private Float achievementRate;
-
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Collection> collections = new ArrayList<>();
 

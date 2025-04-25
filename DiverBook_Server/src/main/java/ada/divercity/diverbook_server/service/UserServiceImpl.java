@@ -11,6 +11,7 @@ import ada.divercity.diverbook_server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -39,7 +40,6 @@ public class UserServiceImpl implements UserService {
                 .interests(request.getInterests())
                 .places(request.getPlaces())
                 .about(request.getAbout())
-                .achievementRate(0.0f)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -49,6 +49,12 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         return UserDto.fromEntity(user);
+    }
+
+    @Transactional(readOnly = true)
+    public Float getAchievementRateById(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return (long) user.getCollections().size() / (float) (userRepository.count() - 1) * 100;
     }
 
     public UserDto updateUser(UUID id, UpdateUserRequest request) {
@@ -134,7 +140,6 @@ public class UserServiceImpl implements UserService {
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
-                .achievementRate(user.getAchievementRate())
                 .build();
     }
 

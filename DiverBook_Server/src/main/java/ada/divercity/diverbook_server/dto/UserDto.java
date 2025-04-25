@@ -19,7 +19,6 @@ public class UserDto {
     private String interests;
     private String places;
     private String about;
-    private Float achievementRate;
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
@@ -31,7 +30,6 @@ public class UserDto {
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
-                .achievementRate(user.getAchievementRate())
                 .build();
     }
 }

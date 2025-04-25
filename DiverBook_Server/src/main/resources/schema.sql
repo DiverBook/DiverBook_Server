@@ -6,8 +6,7 @@ CREATE TABLE IF NOT EXISTS app_user(
     phone_number VARCHAR(20),
     interests VARCHAR(255),
     places VARCHAR(255),
-    about VARCHAR(255),
-    achievement_rate FLOAT DEFAULT 0.0
+    about VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS password(
