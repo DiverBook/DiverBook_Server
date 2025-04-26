@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -24,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterUserRequest request) {
-        AuthResponse response = authService.registerAndLogin(request);
+        AuthResponse response = authService.activateAndLogin(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

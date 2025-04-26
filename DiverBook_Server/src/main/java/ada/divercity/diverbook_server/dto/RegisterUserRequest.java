@@ -10,7 +10,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class RegisterUserRequest {
-    private UUID id;
     private String userName;
     private String userImage;
     private String divisions;
