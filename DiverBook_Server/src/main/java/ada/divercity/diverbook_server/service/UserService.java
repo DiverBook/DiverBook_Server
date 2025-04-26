@@ -10,6 +10,11 @@ import java.util.UUID;
 
 public interface UserService {
     public UserDto createUser(RegisterUserRequest request);
+
+    public UserDto activateUser(RegisterUserRequest request);
+
+    public UserDto deactivateUser(UUID id);
+
     public UserDto getUserById(UUID id);
 
     public Float getAchievementRateById(UUID id);

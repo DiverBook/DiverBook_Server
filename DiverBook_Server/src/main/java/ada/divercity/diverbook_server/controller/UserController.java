@@ -50,4 +50,12 @@ public class UserController {
         Boolean updated = userService.changeUserPassword(userId, request);
         return ResponseEntity.ok(updated);
     }
+
+    @PostMapping("/me/deactivate")
+    public ResponseEntity<UserDto> deactivateUser(
+            @AuthenticationPrincipal UUID userId
+    ) {
+        UserDto updated = userService.deactivateUser(userId);
+        return ResponseEntity.ok(updated);
+    }
 }
