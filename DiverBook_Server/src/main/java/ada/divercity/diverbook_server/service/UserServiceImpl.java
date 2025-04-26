@@ -23,16 +23,11 @@ public class UserServiceImpl implements UserService {
     private final PasswordRepository passwordRepository;
 
     public UserDto createUser(RegisterUserRequest request) {
-        if (userRepository.findById(request.getId()).isPresent()) {
-            throw new RuntimeException("User already exists");
-        }
-
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
 
         User user = User.builder()
-                .id(request.getId())
                 .userName(request.getUserName())
                 .userImage(request.getUserImage())
                 .divisions(request.getDivisions())
@@ -44,6 +39,29 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
         return UserDto.fromEntity(savedUser);
+    }
+
+    public UserDto activateUser(RegisterUserRequest request) {
+        User user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setIsActivated(true);
+
+        return UserDto.fromEntity(userRepository.save(user));
+    }
+
+    public UserDto deactivateUser(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setDivisions(null);
+        user.setPhoneNumber(null);
+        user.setInterests(null);
+        user.setPlaces(null);
+        user.setAbout(null);
+        user.setIsActivated(false);
+
+        passwordRepository.deleteById(id);
+
+        return UserDto.fromEntity(userRepository.save(user));
     }
 
     public UserDto getUserById(UUID id) {
