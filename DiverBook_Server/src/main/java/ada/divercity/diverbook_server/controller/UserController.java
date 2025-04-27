@@ -7,6 +7,7 @@ import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.entity.ProfileImage;
 import ada.divercity.diverbook_server.service.UserProfileImageServiceImpl;
 import ada.divercity.diverbook_server.service.UserServiceImpl;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@SecurityRequirement(name = "JWT")
 public class UserController {
 
     private final UserServiceImpl userService;
