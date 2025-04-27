@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordRepository passwordRepository;
+    private final TokenBlackListServiceImpl tokenBlackListService;
 
     public UserDto createUser(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
@@ -130,6 +131,7 @@ public class UserServiceImpl implements UserService {
         }
 
         password.setPassword(encodePassword(request.getNewPassword()));
+        tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
 
         passwordRepository.save(password);
 
