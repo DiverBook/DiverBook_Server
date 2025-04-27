@@ -6,6 +6,7 @@ import ada.divercity.diverbook_server.dto.RegisterUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.TokenBlackList;
+import ada.divercity.diverbook_server.entity.User;
 import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
@@ -13,7 +14,9 @@ import ada.divercity.diverbook_server.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,19 +29,26 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenBlackListRepository tokenBlackListRepository;
 
-    public AuthResponse registerAndLogin(RegisterUserRequest request) {
-        if (userRepository.findByUserName(request.getUserName()).isPresent()) {
-            throw new RuntimeException("User already exists");
+
+    @Transactional
+    public AuthResponse activateAndLogin(RegisterUserRequest request) {
+        Optional<User> user = userRepository.findByUserName(request.getUserName());
+        if (user.isEmpty()) {
+            throw new RuntimeException("User is not exists");
+        }
+
+        if (user.get().getIsActivated()) {
+            throw new RuntimeException("User is already activated");
         }
 
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
             throw new RuntimeException("Password cannot be null or empty");
         }
 
-        UserDto newUserDto = userService.createUser(request);
-        Boolean isAdded = userService.addNewPassword(request.getId(), request.getPassword());
+        UserDto newUserDto = userService.activateUser(request);
+        Boolean isAdded = userService.addNewPassword(user.get().getId(), request.getPassword());
         if (!isAdded) {
-            userRepository.deleteById(request.getId());
+            userService.deactivateUser(user.get().getId());
             throw new RuntimeException("Password cannot be added");
         }
 

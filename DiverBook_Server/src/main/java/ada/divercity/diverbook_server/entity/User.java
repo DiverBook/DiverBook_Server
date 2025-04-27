@@ -17,13 +17,11 @@ import java.util.UUID;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
     @Column(nullable = false)
     private String userName;
-
-    @Lob
-    private String userImage;
 
     private String divisions;
 
@@ -35,11 +33,14 @@ public class User {
 
     private String about;
 
-    private Float achievementRate;
+    @Builder.Default
+    private Boolean isActivated = false;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Collection> collections = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<UserBadge> userBadges = new ArrayList<>();
 }

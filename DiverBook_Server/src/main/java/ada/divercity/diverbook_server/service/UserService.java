@@ -10,13 +10,20 @@ import java.util.UUID;
 
 public interface UserService {
     public UserDto createUser(RegisterUserRequest request);
+
+    public UserDto activateUser(RegisterUserRequest request);
+
+    public UserDto deactivateUser(UUID id);
+
     public UserDto getUserById(UUID id);
+
+    public Float getAchievementRateById(UUID id);
 
     public UserDto updateUser(UUID id, UpdateUserRequest request);
 
     public Boolean addNewPassword(UUID id, String rawPassword);
 
-    public Boolean changeUserPassword(UUID id, ChangePasswordRequest request);
+    public String changeUserPassword(UUID id, ChangePasswordRequest request);
 
     private String encodePassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {

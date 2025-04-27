@@ -1,0 +1,61 @@
+package ada.divercity.diverbook_server.service;
+
+import ada.divercity.diverbook_server.dto.CollectionDto;
+import ada.divercity.diverbook_server.dto.CollectionRequest;
+import ada.divercity.diverbook_server.entity.Collection;
+import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.repository.CollectionRepository;
+import ada.divercity.diverbook_server.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+public class CollectionServiceImpl implements CollectionService {
+    private final CollectionRepository collectionRepository;
+    private final UserRepository userRepository;
+
+    public CollectionDto createCollection(UUID ownerId, CollectionRequest request) {
+        if (ownerId.equals(request.getFoundUserId())) {
+            throw new RuntimeException("Owner and found user cannot be the same");
+        }
+
+        if (collectionRepository.existsByOwnerIdAndFoundUserId(ownerId, request.getFoundUserId())) {
+            throw new RuntimeException("Collection already exists for this owner and found user");
+        }
+
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner User not found"));
+
+        User foundUser = userRepository.findById(request.getFoundUserId())
+                .orElseThrow(() -> new RuntimeException("Found User not found"));
+
+        Collection collection = Collection.builder()
+                .owner(owner)
+                .foundUser(foundUser)
+                .foundDate(LocalDateTime.now())
+                .memo(request.getMemo())
+                .build();
+
+        Collection savedCollection = collectionRepository.save(collection);
+        return CollectionDto.fromEntity(savedCollection);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<CollectionDto> getAllCollections(UUID ownerId) {
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new RuntimeException("Owner User not found"));
+
+        List<Collection> collections = collectionRepository.findByOwnerId(ownerId);
+
+        return collections.stream()
+                .map(CollectionDto::fromEntity)
+                .toList();
+    }
+}

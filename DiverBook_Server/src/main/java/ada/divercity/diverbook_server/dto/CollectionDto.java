@@ -1,10 +1,10 @@
 package ada.divercity.diverbook_server.dto;
 
 import ada.divercity.diverbook_server.entity.Collection;
-import ada.divercity.diverbook_server.entity.User;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CollectionDto {
-    private Long id;
-    private User owner;
-    private User foundUser;
+    private Integer id;
+    private UUID ownerId;
+    private UUID foundUserId;
     private LocalDateTime foundDate;
     private String memo;
 
-    public CollectionDto fromEntity(Collection collection) {
+    public static CollectionDto fromEntity(Collection collection) {
         return CollectionDto.builder()
                 .id(collection.getId())
-                .owner(collection.getOwner())
-                .foundUser(collection.getFoundUser())
+                .ownerId(collection.getOwner().getId())
+                .foundUserId(collection.getFoundUser().getId())
                 .foundDate(collection.getFoundDate())
                 .memo(collection.getMemo())
                 .build();

@@ -3,24 +3,20 @@ package ada.divercity.diverbook_server.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
-
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TokenBlackList {
+public class ProfileImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "invalid_refresh_token")
-    private String token;
+    private String userName;
 
-    @Column
-    private Timestamp invalidAt;
+//    @Lob
+    private String userImage;
 }
