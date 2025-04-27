@@ -23,7 +23,7 @@ public interface UserService {
 
     public Boolean addNewPassword(UUID id, String rawPassword);
 
-    public Boolean changeUserPassword(UUID id, ChangePasswordRequest request);
+    public String changeUserPassword(UUID id, ChangePasswordRequest request);
 
     private String encodePassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {
