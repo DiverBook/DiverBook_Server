@@ -11,7 +11,6 @@ import java.util.UUID;
 @Builder
 public class RegisterUserRequest {
     private String userName;
-    private String userImage;
     private String divisions;
     private String phoneNumber;
     private String interests;

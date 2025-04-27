@@ -29,7 +29,6 @@ public class UserServiceImpl implements UserService {
 
         User user = User.builder()
                 .userName(request.getUserName())
-                .userImage(request.getUserImage())
                 .divisions(request.getDivisions())
                 .phoneNumber(request.getPhoneNumber())
                 .interests(request.getInterests())
@@ -81,9 +80,6 @@ public class UserServiceImpl implements UserService {
 
         if (request.getUserName() != null) {
             user.setUserName(request.getUserName());
-        }
-        if (request.getUserImage() != null) {
-            user.setUserImage(request.getUserImage());
         }
         if (request.getDivisions() != null) {
             user.setDivisions(request.getDivisions());
@@ -152,7 +148,6 @@ public class UserServiceImpl implements UserService {
         return UserDto.builder()
                 .id(user.getId())
                 .userName(user.getUserName())
-                .userImage(user.getUserImage())
                 .divisions(user.getDivisions())
                 .phoneNumber(user.getPhoneNumber())
                 .interests(user.getInterests())

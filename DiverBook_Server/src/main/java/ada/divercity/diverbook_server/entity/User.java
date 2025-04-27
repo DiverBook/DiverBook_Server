@@ -23,9 +23,6 @@ public class User {
     @Column(nullable = false)
     private String userName;
 
-    @Lob
-    private String userImage;
-
     private String divisions;
 
     private String phoneNumber;
