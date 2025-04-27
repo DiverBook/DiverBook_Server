@@ -33,11 +33,14 @@ public class User {
 
     private String about;
 
+    @Builder.Default
     private Boolean isActivated = false;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Collection> collections = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<UserBadge> userBadges = new ArrayList<>();
 }
