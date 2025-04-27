@@ -13,7 +13,6 @@ import java.util.UUID;
 public class UserDto {
     private UUID id;
     private String userName;
-    private String userImage;
     private String divisions;
     private String phoneNumber;
     private String interests;
@@ -24,7 +23,6 @@ public class UserDto {
         return UserDto.builder()
                 .id(user.getId())
                 .userName(user.getUserName())
-                .userImage(user.getUserImage())
                 .divisions(user.getDivisions())
                 .phoneNumber(user.getPhoneNumber())
                 .interests(user.getInterests())

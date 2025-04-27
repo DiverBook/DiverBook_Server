@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserBadgeDto {
-    private Long id;
+    private Integer id;
     private User user;
     private Badge badge;
     private LocalDateTime acquiredDate;

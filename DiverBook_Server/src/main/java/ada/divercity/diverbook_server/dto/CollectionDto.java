@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CollectionDto {
-    private Long id;
+    private Integer id;
     private UUID ownerId;
     private UUID foundUserId;
     private LocalDateTime foundDate;

@@ -18,7 +18,7 @@ public class Collection {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
@@ -30,6 +30,6 @@ public class Collection {
 
     private LocalDateTime foundDate;
 
-    @Lob
+//    @Lob
     private String memo;
 }
