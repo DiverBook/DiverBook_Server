@@ -8,6 +8,7 @@ import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.User;
 import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
+import ada.divercity.diverbook_server.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordRepository passwordRepository;
+    private final TokenBlackListServiceImpl tokenBlackListService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public UserDto createUser(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
@@ -117,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
         return true;
     }
-    public Boolean changeUserPassword(UUID id, ChangePasswordRequest request) {
+    public String changeUserPassword(UUID id, ChangePasswordRequest request) {
         Password password = passwordRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -130,10 +133,13 @@ public class UserServiceImpl implements UserService {
         }
 
         password.setPassword(encodePassword(request.getNewPassword()));
+        tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
+
+        String refreshToken = jwtTokenProvider.generateRefreshToken(password.getUserId().toString());
 
         passwordRepository.save(password);
 
-        return true;
+        return refreshToken;
     }
 
     private String encodePassword(String rawPassword) {

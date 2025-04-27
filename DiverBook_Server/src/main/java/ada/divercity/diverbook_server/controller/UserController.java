@@ -55,12 +55,12 @@ public class UserController {
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<Boolean> changeUserPassword(
+    public ResponseEntity<String> changeUserPassword(
             @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
-        Boolean updated = userService.changeUserPassword(userId, request);
-        return ResponseEntity.ok(updated);
+        String refreshToken = userService.changeUserPassword(userId, request);
+        return ResponseEntity.ok(refreshToken);
     }
 
     @PostMapping("/me/deactivate")
