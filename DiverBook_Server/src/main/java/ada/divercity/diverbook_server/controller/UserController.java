@@ -1,8 +1,11 @@
 package ada.divercity.diverbook_server.controller;
 
 import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
+import ada.divercity.diverbook_server.dto.ProfileImageResponse;
 import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.entity.ProfileImage;
+import ada.divercity.diverbook_server.service.UserProfileImageServiceImpl;
 import ada.divercity.diverbook_server.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import java.util.UUID;
 public class UserController {
 
     private final UserServiceImpl userService;
+    private final UserProfileImageServiceImpl userProfileImageService;
 
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMe(@AuthenticationPrincipal UUID userId) {
@@ -26,6 +30,12 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
         return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("/{id}/profile-image")
+    public ResponseEntity<ProfileImageResponse> getUserProfileImage(@PathVariable UUID id) {
+        UserDto user = userService.getUserById(id);
+        return ResponseEntity.ok(userProfileImageService.getProfileImageByUserName(user.getUserName()));
     }
 
     @GetMapping("/{id}/achievement-rate")

@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS app_user(
     id UUID PRIMARY KEY,
     user_name VARCHAR(100) NOT NULL,
-    user_image TEXT,
     divisions VARCHAR(255),
     phone_number VARCHAR(20),
     interests VARCHAR(255),
@@ -43,3 +42,9 @@ CREATE TABLE IF NOT EXISTS token_black_list(
     invalid_refresh_token VARCHAR(255),
     invalid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS profile_image(
+    id SERIAL PRIMARY KEY,
+    user_name VARCHAR(100) NOT NULL,
+    user_image TEXT
+)
