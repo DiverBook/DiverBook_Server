@@ -12,14 +12,14 @@ public class BadgeDto {
     private String code;
     private String name;
     private String description;
-    private String imageUrl;
+    private String image;
 
     public BadgeDto fromEntity(Badge badge) {
         return BadgeDto.builder()
                 .code(badge.getCode())
                 .name(badge.getName())
                 .description(badge.getDescription())
-                .imageUrl(badge.getImageUrl())
+                .image(badge.getImage())
                 .build();
     }
 }
