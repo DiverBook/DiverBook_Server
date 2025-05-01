@@ -1,5 +1,7 @@
 package ada.divercity.diverbook_server.security;
 
+import ada.divercity.diverbook_server.exception.CustomException;
+import ada.divercity.diverbook_server.exception.ErrorCode;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,16 +33,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             System.out.println(request.getHeader("Authorization"));
-            String userId = jwtTokenProvider.validateAndGetUserId(token);
-            if (userId != null) {
-                // Convert the userId string to UUID
-                UUID userUuid = UUID.fromString(userId);
-                // Verify the user exists but use the UUID as the principal
-                userRepository.findById(userUuid)
-                        .orElseThrow(() -> new RuntimeException("Invalid user"));
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userUuid, null, List.of());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                String userId = jwtTokenProvider.validateAndGetUserId(token);
+                if (userId != null) {
+                    // Convert the userId string to UUID
+                    UUID userUuid = UUID.fromString(userId);
+                    // Verify the user exists but use the UUID as the principal
+                    userRepository.findById(userUuid)
+                            .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userUuid, null, List.of());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                if (e instanceof CustomException) {
+                    if (((CustomException) e).getErrorCode() == ErrorCode.EXPIRED_TOKEN) {
+                        System.out.println("Expired JWT token");
+                        throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+                    } else if (((CustomException) e).getErrorCode() == ErrorCode.INVALID_TOKEN) {
+                        System.out.println("Invalid JWT token");
+                        throw new CustomException(ErrorCode.INVALID_TOKEN);
+                    }
+                } else {
+                    throw e;
+                }
             }
         }
 

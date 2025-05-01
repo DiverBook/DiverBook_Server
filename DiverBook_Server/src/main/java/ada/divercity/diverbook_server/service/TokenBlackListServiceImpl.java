@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TokenBlackListServiceImpl implements TokenBlackListService {
+
     private final TokenBlackListRepository tokenBlackListRepository;
 
     public void addTokenToBlackList(String token) {

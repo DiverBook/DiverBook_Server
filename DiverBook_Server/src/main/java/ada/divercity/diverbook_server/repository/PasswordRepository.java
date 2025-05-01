@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface PasswordRepository extends JpaRepository<Password, UUID> {
+    void deleteByUserId(UUID userId);
 }

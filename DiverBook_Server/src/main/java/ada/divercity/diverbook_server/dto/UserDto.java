@@ -13,25 +13,23 @@ import java.util.UUID;
 public class UserDto {
     private UUID id;
     private String userName;
-    private String userImage;
     private String divisions;
     private String phoneNumber;
     private String interests;
     private String places;
     private String about;
-    private Float achievementRate;
+    private String profileImageUrl;
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .userName(user.getUserName())
-                .userImage(user.getUserImage())
                 .divisions(user.getDivisions())
                 .phoneNumber(user.getPhoneNumber())
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
-                .achievementRate(user.getAchievementRate())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 }

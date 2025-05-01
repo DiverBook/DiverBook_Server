@@ -14,7 +14,7 @@ public class BadgeDto {
     private String description;
     private String imageUrl;
 
-    public BadgeDto fromEntity(Badge badge) {
+    public static BadgeDto fromEntity(Badge badge) {
         return BadgeDto.builder()
                 .code(badge.getCode())
                 .name(badge.getName())

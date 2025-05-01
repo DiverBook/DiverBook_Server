@@ -16,7 +16,7 @@ public class TokenBlackList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "invalid_refresh_token")
     private String token;

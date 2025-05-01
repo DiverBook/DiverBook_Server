@@ -1,4 +1,4 @@
-package ada.divercity.diverbook_server.entity;
+package ada.divercity.diverbook_server.dto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +7,6 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor

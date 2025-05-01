@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "user_badge", uniqueConstraints = {
@@ -18,15 +19,16 @@ public class UserBadge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "badge_id", nullable = false)
+    @JoinColumn(name = "badge_code", nullable = false)
     private Badge badge;
 
-    private LocalDateTime acquiredDate;
+    @Builder.Default
+    private LocalDateTime acquiredDate = LocalDateTime.now();
 }

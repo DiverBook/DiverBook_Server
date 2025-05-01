@@ -12,40 +12,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
-    private final TokenBlackListService tokenBlackListService;
 
     @PostMapping("/signup")
-    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterUserRequest request) {
-        AuthResponse response = authService.registerAndLogin(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@Valid @RequestBody RegisterUserRequest request) {
+        AuthResponse response = authService.activateAndLogin(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
         if (request.getRefreshToken() == null || request.getRefreshToken().trim().isEmpty()) {
             throw new IllegalArgumentException("Refresh token cannot be null or empty");
         }
         AuthResponse tokens = authService.reissueAccessToken(request.getRefreshToken());
-        return ResponseEntity.ok(tokens);
+        return ResponseEntity.ok(ApiResponse.success(tokens));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
         AuthResponse tokens = authService.login(request);
-        return ResponseEntity.ok(tokens);
+        return ResponseEntity.ok(ApiResponse.success(tokens));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<AuthResponse> logout(@Valid @RequestBody LogoutRequest request) {
-        AuthResponse tokens = authService.logout(request.getRefreshToken());
-        return ResponseEntity.ok(tokens);
+    public ResponseEntity<ApiResponse<AuthResponse>> logout(@Valid @RequestBody LogoutRequest request) {
+        AuthResponse response = authService.logout(request.getRefreshToken());
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
