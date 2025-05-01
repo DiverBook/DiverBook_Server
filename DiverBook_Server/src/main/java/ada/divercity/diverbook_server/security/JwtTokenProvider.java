@@ -2,6 +2,7 @@ package ada.divercity.diverbook_server.security;
 
 import ada.divercity.diverbook_server.exception.CustomException;
 import ada.divercity.diverbook_server.exception.ErrorCode;
+import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.service.TokenBlackListServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -18,12 +19,19 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
+    TokenBlackListRepository tokenBlackListRepository;
     TokenBlackListServiceImpl tokenBlackListService;
 
     @Value("${JWT_SECRET}")
     private String JWT_SECRET;
 
     private Key key;
+
+    public JwtTokenProvider(TokenBlackListRepository tokenBlackListRepository) {
+        this.tokenBlackListRepository = tokenBlackListRepository;
+        this.tokenBlackListService = new TokenBlackListServiceImpl(tokenBlackListRepository);
+    }
 
 
     @PostConstruct

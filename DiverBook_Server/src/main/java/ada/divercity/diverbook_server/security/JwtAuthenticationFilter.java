@@ -46,8 +46,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                System.out.println("Invalid JWT token");
-                throw new CustomException(ErrorCode.INVALID_TOKEN);
+                if (e instanceof CustomException) {
+                    if (((CustomException) e).getErrorCode() == ErrorCode.EXPIRED_TOKEN) {
+                        System.out.println("Expired JWT token");
+                        throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+                    } else if (((CustomException) e).getErrorCode() == ErrorCode.INVALID_TOKEN) {
+                        System.out.println("Invalid JWT token");
+                        throw new CustomException(ErrorCode.INVALID_TOKEN);
+                    }
+                } else {
+                    throw e;
+                }
             }
         }
 
