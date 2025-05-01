@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS app_user(
     interests VARCHAR(255),
     places VARCHAR(255),
     about VARCHAR(255),
+    profile_image_url VARCHAR(255),
     is_activated BOOLEAN DEFAULT FALSE NOT NULL
 );
 
@@ -26,7 +27,7 @@ CREATE TABLE IF NOT EXISTS badge(
     code VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description VARCHAR(255),
-    image TEXT
+    image_url VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS user_badge(
@@ -43,9 +44,3 @@ CREATE TABLE IF NOT EXISTS token_black_list(
     invalid_refresh_token VARCHAR(255),
     invalid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE TABLE IF NOT EXISTS profile_image(
-    id SERIAL PRIMARY KEY,
-    user_name VARCHAR(100) NOT NULL,
-    user_image TEXT
-)

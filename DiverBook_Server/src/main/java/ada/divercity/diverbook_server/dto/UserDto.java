@@ -18,6 +18,7 @@ public class UserDto {
     private String interests;
     private String places;
     private String about;
+    private String profileImageUrl;
 
     public static UserDto fromEntity(User user) {
         return UserDto.builder()
@@ -28,6 +29,7 @@ public class UserDto {
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 }
