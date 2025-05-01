@@ -1,10 +1,6 @@
 package ada.divercity.diverbook_server.controller;
 
-import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
-import ada.divercity.diverbook_server.dto.ProfileImageResponse;
-import ada.divercity.diverbook_server.dto.UpdateUserRequest;
-import ada.divercity.diverbook_server.dto.UserDto;
-import ada.divercity.diverbook_server.entity.ProfileImage;
+import ada.divercity.diverbook_server.dto.*;
 import ada.divercity.diverbook_server.service.UserProfileImageServiceImpl;
 import ada.divercity.diverbook_server.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,49 +21,53 @@ public class UserController {
     private final UserProfileImageServiceImpl userProfileImageService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getMe(@AuthenticationPrincipal UUID userId) {
-        return ResponseEntity.ok(userService.getUserById(userId));
+    public ResponseEntity<ApiResponse<UserDto>> getMe(@AuthenticationPrincipal UUID userId) {
+        UserDto user = userService.getUserById(userId);
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable UUID id) {
+        UserDto user = userService.getUserById(id);
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     @GetMapping("/{id}/profile-image")
-    public ResponseEntity<ProfileImageResponse> getUserProfileImage(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<ProfileImageResponse>> getUserProfileImage(@PathVariable UUID id) {
         UserDto user = userService.getUserById(id);
-        return ResponseEntity.ok(userProfileImageService.getProfileImageByUserName(user.getUserName()));
+        ProfileImageResponse profileImage = userProfileImageService.getProfileImageByUserName(user.getUserName());
+        return ResponseEntity.ok(ApiResponse.success(profileImage));
     }
 
     @GetMapping("/{id}/achievement-rate")
-    public ResponseEntity<Float> getAchievementRate(@PathVariable UUID id) {
-        return ResponseEntity.ok(userService.getAchievementRateById(id));
+    public ResponseEntity<ApiResponse<Float>> getAchievementRate(@PathVariable UUID id) {
+        Float achievementRate = userService.getAchievementRateById(id);
+        return ResponseEntity.ok(ApiResponse.success(achievementRate));
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<UserDto> updateUser(
+    public ResponseEntity<ApiResponse<UserDto>> updateUser(
             @RequestBody UpdateUserRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
         UserDto updated = userService.updateUser(userId, request);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<String> changeUserPassword(
+    public ResponseEntity<ApiResponse<String>> changeUserPassword(
             @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
         String refreshToken = userService.changeUserPassword(userId, request);
-        return ResponseEntity.ok(refreshToken);
+        return ResponseEntity.ok(ApiResponse.success(refreshToken));
     }
 
     @PostMapping("/me/deactivate")
-    public ResponseEntity<UserDto> deactivateUser(
+    public ResponseEntity<ApiResponse<UserDto>> deactivateUser(
             @AuthenticationPrincipal UUID userId
     ) {
         UserDto updated = userService.deactivateUser(userId);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(ApiResponse.success(updated));
     }
 }
