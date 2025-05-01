@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS app_user(
     interests VARCHAR(255),
     places VARCHAR(255),
     about VARCHAR(255),
-    is_activated BOOLEAN DEFAULT FALSE NOT NULL
+    isActivated BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS password(
@@ -25,17 +25,16 @@ CREATE TABLE IF NOT EXISTS collection (
 CREATE TABLE IF NOT EXISTS badge(
     code VARCHAR(50) PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    description VARCHAR(255),
-    image TEXT
+    description TEXT,
+    image_url VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS user_badge(
-    id  SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES app_user(id) ON DELETE CASCADE,
     badge_code VARCHAR(50) NOT NULL REFERENCES badge(code) ON DELETE CASCADE,
     acquired_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE,
-    CONSTRAINT fk_badge FOREIGN KEY (badge_code) REFERENCES badge(code) ON DELETE CASCADE
+    UNIQUE(user_id, badge_code)
 );
 
 CREATE TABLE IF NOT EXISTS token_black_list(

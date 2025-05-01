@@ -1,6 +1,5 @@
 package ada.divercity.diverbook_server.controller;
 
-import ada.divercity.diverbook_server.dto.ApiResponse;
 import ada.divercity.diverbook_server.dto.CollectionDto;
 import ada.divercity.diverbook_server.dto.CollectionRequest;
 import ada.divercity.diverbook_server.service.CollectionService;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,23 +20,19 @@ public class CollectionController {
     private final CollectionService collectionService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<CollectionDto>> createCollection(
+    public ResponseEntity<CollectionDto> createCollection(
             @RequestBody CollectionRequest request,
             Authentication authentication
     ) {
         UUID userId = UUID.fromString(authentication.getName());
-
-        CollectionDto collection = collectionService.createCollection(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(collection));
+        return ResponseEntity.ok(collectionService.createCollection(userId, request));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CollectionDto>>> getAllCollections(
+    public ResponseEntity<Iterable<CollectionDto>> getAllCollections(
             Authentication authentication
     ) {
         UUID userId = UUID.fromString(authentication.getName());
-
-        List<CollectionDto> collections = collectionService.getAllCollections(userId);
-        return ResponseEntity.ok(ApiResponse.success(collections));
+        return ResponseEntity.ok(collectionService.getAllCollections(userId));
     }
 }

@@ -18,31 +18,32 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final TokenBlackListService tokenBlackListService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@Valid @RequestBody RegisterUserRequest request) {
+    public ResponseEntity<AuthResponse> registerUser(@Valid @RequestBody RegisterUserRequest request) {
         AuthResponse response = authService.activateAndLogin(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
+    public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody TokenRefreshRequest request) {
         if (request.getRefreshToken() == null || request.getRefreshToken().trim().isEmpty()) {
             throw new IllegalArgumentException("Refresh token cannot be null or empty");
         }
         AuthResponse tokens = authService.reissueAccessToken(request.getRefreshToken());
-        return ResponseEntity.ok(ApiResponse.success(tokens));
+        return ResponseEntity.ok(tokens);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         AuthResponse tokens = authService.login(request);
-        return ResponseEntity.ok(ApiResponse.success(tokens));
+        return ResponseEntity.ok(tokens);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<AuthResponse>> logout(@Valid @RequestBody LogoutRequest request) {
-        AuthResponse response = authService.logout(request.getRefreshToken());
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<AuthResponse> logout(@Valid @RequestBody LogoutRequest request) {
+        AuthResponse tokens = authService.logout(request.getRefreshToken());
+        return ResponseEntity.ok(tokens);
     }
 }

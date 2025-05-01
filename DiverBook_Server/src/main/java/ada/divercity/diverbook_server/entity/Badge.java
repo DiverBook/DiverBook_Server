@@ -24,5 +24,9 @@ public class Badge {
 
     private String description;
 
-    private String image;
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "badge", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<UserBadge> userBadges = new ArrayList<>();
 }
