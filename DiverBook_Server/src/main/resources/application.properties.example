@@ -6,3 +6,4 @@ spring.datasource.password={password}
 spring.sql.init.mode=always
 spring.jpa.hibernate.ddl-auto=validate
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+file.upload-dir={file upload directory}
