@@ -1,5 +1,9 @@
 package ada.divercity.diverbook_server.security;
 
+import ada.divercity.diverbook_server.exception.CustomException;
+import ada.divercity.diverbook_server.exception.ErrorCode;
+import ada.divercity.diverbook_server.service.TokenBlackListServiceImpl;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -14,6 +18,8 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+    TokenBlackListServiceImpl tokenBlackListService;
+
     @Value("${JWT_SECRET}")
     private String JWT_SECRET;
 
@@ -61,27 +67,36 @@ public class JwtTokenProvider {
 
     public String validateAndGetUserId(String token) {
         try {
+            if (tokenBlackListService.isTokenBlackListed(token)) {
+                throw new CustomException(ErrorCode.EXPIRED_TOKEN);
+            }
             return Jwts.parser()
                     .verifyWith((SecretKey) key)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()
                     .getId();
+        } catch (ExpiredJwtException e) {
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         } catch (JwtException e) {
-            throw new RuntimeException("JWT token is invalid: ", e);
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
     }
 
-    public boolean validateToken(String token) {
+    public TokenValidationStatus validateToken(String token) {
         try {
+            if (tokenBlackListService.isTokenBlackListed(token)) {
+                return TokenValidationStatus.EXPIRED;
+            }
             Jwts.parser()
                     .verifyWith((SecretKey) key)
                     .build()
                     .parseSignedClaims(token);
-            return true;
+            return TokenValidationStatus.VALID;
+        } catch (ExpiredJwtException e) {
+            return TokenValidationStatus.EXPIRED;
         } catch (JwtException e) {
-            return false;
+            return TokenValidationStatus.INVALID;
         }
     }
-
 }
