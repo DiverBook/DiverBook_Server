@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "user_badge", uniqueConstraints = {
@@ -29,6 +28,5 @@ public class UserBadge {
     @JoinColumn(name = "badge_code", nullable = false)
     private Badge badge;
 
-    @Builder.Default
-    private LocalDateTime acquiredDate = LocalDateTime.now();
+    private LocalDateTime acquiredDate;
 }

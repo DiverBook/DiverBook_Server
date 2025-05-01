@@ -1,10 +1,11 @@
 package ada.divercity.diverbook_server.dto;
 
+import ada.divercity.diverbook_server.entity.Badge;
+import ada.divercity.diverbook_server.entity.User;
 import ada.divercity.diverbook_server.entity.UserBadge;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -13,15 +14,15 @@ import java.util.UUID;
 @Builder
 public class UserBadgeDto {
     private Integer id;
-    private UUID userId;
-    private String badgeCode;
+    private User user;
+    private Badge badge;
     private LocalDateTime acquiredDate;
 
-    public static UserBadgeDto fromEntity(UserBadge userBadge) {
+    public UserBadgeDto fromEntity(UserBadge userBadge) {
         return UserBadgeDto.builder()
                 .id(userBadge.getId())
-                .userId(userBadge.getUser().getId())
-                .badgeCode(userBadge.getBadge().getCode())
+                .user(userBadge.getUser())
+                .badge(userBadge.getBadge())
                 .acquiredDate(userBadge.getAcquiredDate())
                 .build();
     }
