@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordRepository passwordRepository;
-    private final TokenBlackListServiceImpl tokenBlackListService;
+    private final TokenBlackListService tokenBlackListService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public UserDto createUser(RegisterUserRequest request) {
@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
         return UserDto.fromEntity(userRepository.save(user));
     }
 
+    @Transactional
     public UserDto deactivateUser(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
         user.setAbout(null);
         user.setIsActivated(false);
 
-        passwordRepository.deleteById(id);
+        passwordRepository.deleteByUserId(id);
 
         return UserDto.fromEntity(userRepository.save(user));
     }

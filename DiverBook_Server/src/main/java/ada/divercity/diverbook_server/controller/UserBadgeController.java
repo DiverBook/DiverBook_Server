@@ -2,7 +2,7 @@ package ada.divercity.diverbook_server.controller;
 
 import ada.divercity.diverbook_server.dto.ApiResponse;
 import ada.divercity.diverbook_server.dto.UserBadgeDto;
-import ada.divercity.diverbook_server.service.UserBadgeServiceImpl;
+import ada.divercity.diverbook_server.service.UserBadgeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @SecurityRequirement(name = "JWT")
 public class UserBadgeController {
 
-    private final UserBadgeServiceImpl userBadgeService;
+    private final UserBadgeService userBadgeService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserBadgeDto>>> getUserBadges(Authentication authentication) {

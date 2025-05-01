@@ -1,8 +1,8 @@
 package ada.divercity.diverbook_server.controller;
 
 import ada.divercity.diverbook_server.dto.*;
-import ada.divercity.diverbook_server.service.UserProfileImageServiceImpl;
-import ada.divercity.diverbook_server.service.UserServiceImpl;
+import ada.divercity.diverbook_server.service.UserProfileImageService;
+import ada.divercity.diverbook_server.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +17,8 @@ import java.util.UUID;
 @SecurityRequirement(name = "JWT")
 public class UserController {
 
-    private final UserServiceImpl userService;
-    private final UserProfileImageServiceImpl userProfileImageService;
+    private final UserService userService;
+    private final UserProfileImageService userProfileImageService;
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserDto>> getMe(@AuthenticationPrincipal UUID userId) {
