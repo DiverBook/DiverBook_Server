@@ -1,7 +1,6 @@
 package ada.divercity.diverbook_server.controller;
 
 import ada.divercity.diverbook_server.dto.*;
-import ada.divercity.diverbook_server.service.UserProfileImageService;
 import ada.divercity.diverbook_server.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
-    private final UserProfileImageService userProfileImageService;
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserDto>> getMe(@AuthenticationPrincipal UUID userId) {
@@ -30,13 +28,6 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserDto>> getUserById(@PathVariable UUID id) {
         UserDto user = userService.getUserById(id);
         return ResponseEntity.ok(ApiResponse.success(user));
-    }
-
-    @GetMapping("/{id}/profile-image")
-    public ResponseEntity<ApiResponse<ProfileImageResponse>> getUserProfileImage(@PathVariable UUID id) {
-        UserDto user = userService.getUserById(id);
-        ProfileImageResponse profileImage = userProfileImageService.getProfileImageByUserName(user.getUserName());
-        return ResponseEntity.ok(ApiResponse.success(profileImage));
     }
 
     @GetMapping("/{id}/achievement-rate")

@@ -21,5 +21,5 @@ public class Badge {
 
     private String description;
 
-    private String image;
+    private String imageUrl;
 }

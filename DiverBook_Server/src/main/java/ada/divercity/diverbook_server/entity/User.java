@@ -36,6 +36,8 @@ public class User {
     @Builder.Default
     private Boolean isActivated = false;
 
+    private String profileImageUrl;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Collection> collections = new ArrayList<>();
