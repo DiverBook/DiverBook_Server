@@ -6,6 +6,8 @@ import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.exception.CustomException;
+import ada.divercity.diverbook_server.exception.ErrorCode;
 import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDto createUser(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new CustomException(ErrorCode.DUPLICATE_USERNAME);
         }
 
         User user = User.builder()
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto activateUser(RegisterUserRequest request) {
-        User user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.setIsActivated(true);
 
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto deactivateUser(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.setDivisions(null);
         user.setPhoneNumber(null);
@@ -67,18 +69,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getUserById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return UserDto.fromEntity(user);
     }
 
     @Transactional(readOnly = true)
     public Float getAchievementRateById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return (long) user.getCollections().size() / (float) (userRepository.count() - 1) * 100;
     }
 
     public UserDto updateUser(UUID id, UpdateUserRequest request) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         UserDto updated = UserDto.fromEntity(user);
 
         if (request.getUserName() != null) {
@@ -104,10 +106,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public Boolean addNewPassword(UUID id, String rawPassword) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         if (passwordRepository.findById(id).isPresent()) {
-            throw new RuntimeException("Password already exists");
+            throw new CustomException(ErrorCode.PASSWORD_ALREADY_EXISTS);
         }
 
         Password newPassword = Password
@@ -121,15 +123,15 @@ public class UserServiceImpl implements UserService {
         return true;
     }
     public String changeUserPassword(UUID id, ChangePasswordRequest request) {
-        Password password = passwordRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        Password password = passwordRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.PASSWORD_NOT_FOUND));
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         if (!encoder.matches(request.getPassword(), password.getPassword())) {
-            throw new RuntimeException("Password is not correct");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         if (request.getNewPassword() == null || request.getNewPassword().isEmpty()) {
-            throw new RuntimeException("New password cannot be null or empty");
+            throw new CustomException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
 
         password.setPassword(encodePassword(request.getNewPassword()));
@@ -144,7 +146,7 @@ public class UserServiceImpl implements UserService {
 
     private String encodePassword(String rawPassword) {
         if (rawPassword == null || rawPassword.isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
+            throw new CustomException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
 
         return new BCryptPasswordEncoder().encode(rawPassword);

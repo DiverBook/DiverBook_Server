@@ -4,6 +4,8 @@ import ada.divercity.diverbook_server.dto.CollectionDto;
 import ada.divercity.diverbook_server.dto.CollectionRequest;
 import ada.divercity.diverbook_server.entity.Collection;
 import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.exception.CustomException;
+import ada.divercity.diverbook_server.exception.ErrorCode;
 import ada.divercity.diverbook_server.repository.CollectionRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +24,18 @@ public class CollectionServiceImpl implements CollectionService {
 
     public CollectionDto createCollection(UUID ownerId, CollectionRequest request) {
         if (ownerId.equals(request.getFoundUserId())) {
-            throw new RuntimeException("Owner and found user cannot be the same");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         if (collectionRepository.existsByOwnerIdAndFoundUserId(ownerId, request.getFoundUserId())) {
-            throw new RuntimeException("Collection already exists for this owner and found user");
+            throw new CustomException(ErrorCode.DUPLICATE_COLLECTION);
         }
 
         User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("Owner User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         User foundUser = userRepository.findById(request.getFoundUserId())
-                .orElseThrow(() -> new RuntimeException("Found User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Collection collection = Collection.builder()
                 .owner(owner)
@@ -50,7 +52,7 @@ public class CollectionServiceImpl implements CollectionService {
     @Transactional(readOnly = true)
     public List<CollectionDto> getAllCollections(UUID ownerId) {
         User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new RuntimeException("Owner User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         List<Collection> collections = collectionRepository.findByOwnerId(ownerId);
 

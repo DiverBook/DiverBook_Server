@@ -4,14 +4,13 @@ import ada.divercity.diverbook_server.dto.UserBadgeDto;
 import ada.divercity.diverbook_server.entity.Badge;
 import ada.divercity.diverbook_server.entity.User;
 import ada.divercity.diverbook_server.entity.UserBadge;
+import ada.divercity.diverbook_server.exception.CustomException;
+import ada.divercity.diverbook_server.exception.ErrorCode;
 import ada.divercity.diverbook_server.repository.BadgeRepository;
 import ada.divercity.diverbook_server.repository.UserBadgeRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,12 +24,9 @@ public class UserBadgeServiceImpl implements UserBadgeService {
     private final UserRepository userRepository;
     private final BadgeRepository badgeRepository;
 
-    @PersistenceContext
-    private final EntityManager entityManager;
-
     public List<UserBadgeDto> getUserBadgesByUserId(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Owner User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         List<UserBadge> userBadges = userBadgeRepository.findByUser(user);
 
@@ -39,17 +35,16 @@ public class UserBadgeServiceImpl implements UserBadgeService {
                 .toList();
     }
 
-//    @Transactional
     public UserBadgeDto createUserBadge(UUID userId, String badgeCode) {
         if (userBadgeRepository.existsByUserIdAndBadgeCode(userId, badgeCode)) {
-            throw new RuntimeException("User badge already exists for this user and badge code");
+            throw new CustomException(ErrorCode.DUPLICATE_USER_BADGE);
         }
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         Badge badge = badgeRepository.findByCode(badgeCode)
-                .orElseThrow(() -> new RuntimeException("Badge not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.BADGE_NOT_FOUND));
 
         UserBadge userBadge = UserBadge.builder()
                 .user(user)

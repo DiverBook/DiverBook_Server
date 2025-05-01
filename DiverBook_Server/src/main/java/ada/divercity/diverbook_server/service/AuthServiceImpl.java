@@ -7,10 +7,13 @@ import ada.divercity.diverbook_server.dto.UserDto;
 import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.TokenBlackList;
 import ada.divercity.diverbook_server.entity.User;
+import ada.divercity.diverbook_server.exception.CustomException;
+import ada.divercity.diverbook_server.exception.ErrorCode;
 import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
+import ada.divercity.diverbook_server.security.TokenValidationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,22 +37,20 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse activateAndLogin(RegisterUserRequest request) {
         Optional<User> user = userRepository.findByUserName(request.getUserName());
         if (user.isEmpty()) {
-            throw new RuntimeException("User is not exists");
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
         }
-
         if (user.get().getIsActivated()) {
-            throw new RuntimeException("User is already activated");
+            throw new CustomException(ErrorCode.USER_ALREADY_ACTIVATED);
         }
-
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            throw new RuntimeException("Password cannot be null or empty");
+            throw new CustomException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
 
         UserDto newUserDto = userService.activateUser(request);
         Boolean isAdded = userService.addNewPassword(user.get().getId(), request.getPassword());
         if (!isAdded) {
             userService.deactivateUser(user.get().getId());
-            throw new RuntimeException("Password cannot be added");
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
 
         String accessToken = jwtTokenProvider.generateAccessToken(newUserDto.getId().toString());
@@ -59,24 +60,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthResponse reissueAccessToken(String refreshToken) {
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh token is expired or invalid");
+        try {
+            String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+
+            String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
+            String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
+
+            return new AuthResponse(UUID.fromString(userId), newAccessToken, newRefreshToken);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
-
-        String userId = jwtTokenProvider.validateAndGetUserId(refreshToken); // 유효성 검사 + userId 추출
-
-        String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
-
-        return new AuthResponse(UUID.fromString(userId), newAccessToken, newRefreshToken);
     }
 
     public AuthResponse login(AuthRequest request) {
         Password password = passwordRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.PASSWORD_NOT_FOUND));
 
         if (!new BCryptPasswordEncoder().matches(request.getPassword(), password.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
         String accessToken = jwtTokenProvider.generateAccessToken(password.getUserId().toString());
@@ -86,13 +87,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthResponse logout(String refreshToken) {
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh token is expired or invalid");
+        try {
+            String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+
+            tokenBlackListRepository.save(TokenBlackList.builder().token(refreshToken).build());
+
+            return new AuthResponse(UUID.fromString(userId), null, null);
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
-
-        String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
-        tokenBlackListRepository.save(TokenBlackList.builder().token(refreshToken).build());
-
-        return new AuthResponse(UUID.fromString(userId), null, null);
     }
+
 }
