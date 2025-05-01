@@ -6,6 +6,7 @@ import ada.divercity.diverbook_server.dto.UpdateUserRequest;
 import ada.divercity.diverbook_server.dto.UserDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
@@ -16,6 +17,8 @@ public interface UserService {
     public UserDto deactivateUser(UUID id);
 
     public UserDto getUserById(UUID id);
+
+    public List<UserDto> getAllUsers();
 
     public Float getAchievementRateById(UUID id);
 
