@@ -44,3 +44,9 @@ CREATE TABLE IF NOT EXISTS token_black_list(
     invalid_refresh_token VARCHAR(255),
     invalid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS question(
+    id SERIAL PRIMARY KEY,
+    question VARCHAR(255),
+    symbol VARCHAR(50)
+);
