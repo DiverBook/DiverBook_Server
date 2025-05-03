@@ -16,6 +16,8 @@ public interface UserService {
 
     public UserDto deactivateUser(UUID id);
 
+    public Boolean getUserActivationStatusByName(String userName);
+
     public UserDto getUserById(UUID id);
 
     public List<UserDto> getAllUsers();
