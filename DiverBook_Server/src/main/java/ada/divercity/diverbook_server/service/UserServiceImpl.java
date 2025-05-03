@@ -70,6 +70,11 @@ public class UserServiceImpl implements UserService {
         return UserDto.fromEntity(userRepository.save(user));
     }
 
+    public Boolean getUserActivationStatusByName(String userName) {
+        User user = userRepository.findByUserName(userName).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return user.getIsActivated();
+    }
+
     public UserDto getUserById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return UserDto.fromEntity(user);
