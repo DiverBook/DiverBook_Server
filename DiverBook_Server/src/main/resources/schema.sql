@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS app_user(
     id UUID PRIMARY KEY,
-    user_name VARCHAR(100) NOT NULL,
+    user_name VARCHAR(100) NOT NULL UNIQUE,
     divisions VARCHAR(255),
     phone_number VARCHAR(20),
     interests VARCHAR(255),
