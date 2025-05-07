@@ -18,6 +18,4 @@ public class Question {
     private Integer id;
 
     private String question;
-
-    private String symbol;
 }
