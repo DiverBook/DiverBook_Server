@@ -18,8 +18,7 @@ public class QuestionServiceImpl implements QuestionService {
         List<QuestionDto> allQuestions = questionRepository.findAll().stream()
                 .map(question -> new QuestionDto(
                         question.getId(),
-                        question.getQuestion(),
-                        question.getSymbol()
+                        question.getQuestion()
                 ))
                 .toList();
 

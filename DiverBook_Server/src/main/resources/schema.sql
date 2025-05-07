@@ -47,6 +47,5 @@ CREATE TABLE IF NOT EXISTS token_black_list(
 
 CREATE TABLE IF NOT EXISTS question(
     id SERIAL PRIMARY KEY,
-    question VARCHAR(255),
-    symbol VARCHAR(50)
+    question VARCHAR(255)
 );
