@@ -49,6 +49,11 @@ public class UserServiceImpl implements UserService {
     public UserDto activateUser(RegisterUserRequest request) {
         User user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        user.setDivisions(request.getDivisions());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setInterests(request.getInterests());
+        user.setPlaces(request.getPlaces());
+        user.setAbout(request.getAbout());
         user.setIsActivated(true);
 
         return UserDto.fromEntity(userRepository.save(user));
