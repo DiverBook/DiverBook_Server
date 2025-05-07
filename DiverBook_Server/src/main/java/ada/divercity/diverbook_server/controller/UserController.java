@@ -32,6 +32,12 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
+    @GetMapping("/profile-image/{name}")
+    public ResponseEntity<ApiResponse<String>> getUserProfileImage(@PathVariable String name) {
+        String profileImageUrl = userService.getProfileImageUrlByName(name);
+        return ResponseEntity.ok(ApiResponse.success(profileImageUrl));
+    }
+
     @SecurityRequirement(name = "JWT")
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserDto>>> getAllUsers() {

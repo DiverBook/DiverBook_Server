@@ -87,6 +87,11 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    public String getProfileImageUrlByName(String userName) {
+        User user = userRepository.findByUserName(userName).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return user.getProfileImageUrl();
+    }
+
     @Transactional(readOnly = true)
     public Float getAchievementRateById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));

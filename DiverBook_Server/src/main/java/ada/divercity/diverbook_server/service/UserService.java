@@ -22,6 +22,8 @@ public interface UserService {
 
     public List<UserDto> getAllUsers();
 
+    public String getProfileImageUrlByName(String userName);
+
     public Float getAchievementRateById(UUID id);
 
     public UserDto updateUser(UUID id, UpdateUserRequest request);
