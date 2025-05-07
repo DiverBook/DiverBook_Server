@@ -185,6 +185,7 @@ public class UserServiceImpl implements UserService {
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 
