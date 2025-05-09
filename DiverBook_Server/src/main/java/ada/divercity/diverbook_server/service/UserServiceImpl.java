@@ -49,6 +49,11 @@ public class UserServiceImpl implements UserService {
     public UserDto activateUser(RegisterUserRequest request) {
         User user = userRepository.findByUserName(request.getUserName()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        user.setDivisions(request.getDivisions());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setInterests(request.getInterests());
+        user.setPlaces(request.getPlaces());
+        user.setAbout(request.getAbout());
         user.setIsActivated(true);
 
         return UserDto.fromEntity(userRepository.save(user));
@@ -70,6 +75,11 @@ public class UserServiceImpl implements UserService {
         return UserDto.fromEntity(userRepository.save(user));
     }
 
+    public Boolean getUserActivationStatusByName(String userName) {
+        User user = userRepository.findByUserName(userName).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return user.getIsActivated();
+    }
+
     public UserDto getUserById(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         return UserDto.fromEntity(user);
@@ -80,6 +90,11 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .map(UserDto::fromEntity)
                 .toList();
+    }
+
+    public String getProfileImageUrlByName(String userName) {
+        User user = userRepository.findByUserName(userName).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        return user.getProfileImageUrl();
     }
 
     @Transactional(readOnly = true)
@@ -170,6 +185,7 @@ public class UserServiceImpl implements UserService {
                 .interests(user.getInterests())
                 .places(user.getPlaces())
                 .about(user.getAbout())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 

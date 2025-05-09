@@ -28,6 +28,8 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/badges/**",
                                 "/api/images/view/**",
+                                "/api/users/profile-image/**",
+                                "/api/users/activation/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"

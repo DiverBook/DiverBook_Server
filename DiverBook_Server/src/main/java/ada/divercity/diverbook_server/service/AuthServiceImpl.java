@@ -73,7 +73,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public AuthResponse login(AuthRequest request) {
-        Password password = passwordRepository.findById(request.getId())
+        User user = userRepository.findByUserName(request.getUserName())
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Password password = passwordRepository.findById(user.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.PASSWORD_NOT_FOUND));
 
         if (!new BCryptPasswordEncoder().matches(request.getPassword(), password.getPassword())) {

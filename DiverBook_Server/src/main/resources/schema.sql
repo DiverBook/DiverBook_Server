@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS app_user(
     id UUID PRIMARY KEY,
-    user_name VARCHAR(100) NOT NULL,
+    user_name VARCHAR(100) NOT NULL UNIQUE,
     divisions VARCHAR(255),
     phone_number VARCHAR(20),
     interests VARCHAR(255),
@@ -47,6 +47,5 @@ CREATE TABLE IF NOT EXISTS token_black_list(
 
 CREATE TABLE IF NOT EXISTS question(
     id SERIAL PRIMARY KEY,
-    question VARCHAR(255),
-    symbol VARCHAR(50)
+    question VARCHAR(255)
 );
