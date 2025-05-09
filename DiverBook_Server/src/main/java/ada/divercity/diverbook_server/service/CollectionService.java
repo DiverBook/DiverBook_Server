@@ -10,4 +10,6 @@ public interface CollectionService {
     public CollectionDto createCollection(UUID ownerId, CollectionRequest request);
 
     public List<CollectionDto> getAllCollections(UUID ownerId);
+
+    public CollectionDto patchCollection(UUID id, CollectionRequest request);
 }
