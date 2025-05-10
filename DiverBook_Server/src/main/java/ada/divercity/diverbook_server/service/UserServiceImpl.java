@@ -12,6 +12,7 @@ import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(Sort.by(Sort.Direction.ASC, "userName"));
         return users.stream()
                 .map(UserDto::fromEntity)
                 .toList();
