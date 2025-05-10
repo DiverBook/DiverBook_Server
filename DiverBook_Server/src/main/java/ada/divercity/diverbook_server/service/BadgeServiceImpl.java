@@ -17,6 +17,7 @@ public class BadgeServiceImpl implements BadgeService {
         List<Badge> badges = badgeRepository.findAll();
 
         return badges.stream()
+                .sorted((badge1, badge2) -> badge1.getCode().compareTo(badge2.getCode()))
                 .map(BadgeDto::fromEntity)
                 .toList();
     }
