@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
             user.setAbout(request.getAbout());
         }
 
-        return convertToDto(userRepository.save(user));
+        return UserDto.fromEntity(userRepository.save(user));
     }
 
     public Boolean addNewPassword(UUID id, String rawPassword) {
@@ -174,19 +174,6 @@ public class UserServiceImpl implements UserService {
         }
 
         return new BCryptPasswordEncoder().encode(rawPassword);
-    }
-
-    private UserDto convertToDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .userName(user.getUserName())
-                .divisions(user.getDivisions())
-                .phoneNumber(user.getPhoneNumber())
-                .interests(user.getInterests())
-                .places(user.getPlaces())
-                .about(user.getAbout())
-                .profileImageUrl(user.getProfileImageUrl())
-                .build();
     }
 
 }
