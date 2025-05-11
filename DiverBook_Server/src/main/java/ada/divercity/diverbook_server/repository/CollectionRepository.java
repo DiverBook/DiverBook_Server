@@ -9,6 +9,9 @@ import java.util.UUID;
 
 @Repository
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
-    boolean existsByOwnerIdAndFoundUserId(UUID ownerId, UUID foundUserId);
     List<Collection> findByOwnerId(UUID ownerId);
+
+    boolean existsByOwnerIdAndFoundUserId(UUID ownerId, UUID foundUserId);
+
+    Collection findByOwnerIdAndFoundUserId(UUID ownerId, UUID foundUserId);
 }

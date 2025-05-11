@@ -24,6 +24,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자가 존재하지 않습니다."),
     PASSWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자의 패스워드가 등록되어 있지 않습니다."),
     BADGE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 뱃지를 찾을 수 없습니다."),
+    COLLECTION_NOT_FOUND(HttpStatus.NOT_FOUND, "도감에 등록되어 있지 않은 사용자입니다."),
 
     // 409: 충돌
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "이미 존재하는 리소스입니다."),

@@ -60,4 +60,20 @@ public class CollectionServiceImpl implements CollectionService {
                 .map(CollectionDto::fromEntity)
                 .toList();
     }
+
+    public CollectionDto patchCollection(UUID ownerId, CollectionRequest request) {
+        User owner = userRepository.findById(ownerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (!collectionRepository.existsByOwnerIdAndFoundUserId(ownerId, request.getFoundUserId())) {
+            throw new CustomException(ErrorCode.COLLECTION_NOT_FOUND);
+        }
+
+        Collection collection = collectionRepository.findByOwnerIdAndFoundUserId(ownerId, request.getFoundUserId());
+        collection.setMemo(request.getMemo());
+
+        Collection savedCollection = collectionRepository.save(collection);
+
+        return CollectionDto.fromEntity(savedCollection);
+    }
 }

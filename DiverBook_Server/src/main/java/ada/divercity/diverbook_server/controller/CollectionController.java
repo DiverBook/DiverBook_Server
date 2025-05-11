@@ -41,4 +41,15 @@ public class CollectionController {
         List<CollectionDto> collections = collectionService.getAllCollections(userId);
         return ResponseEntity.ok(ApiResponse.success(collections));
     }
+
+    @PatchMapping
+    public ResponseEntity<ApiResponse<CollectionDto>> patchCollection(
+            @RequestBody CollectionRequest request,
+            Authentication authentication
+    ) {
+        UUID userId = UUID.fromString(authentication.getName());
+
+        CollectionDto collection = collectionService.patchCollection(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(collection));
+    }
 }
