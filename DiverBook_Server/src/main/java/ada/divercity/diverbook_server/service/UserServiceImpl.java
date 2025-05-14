@@ -1,9 +1,6 @@
 package ada.divercity.diverbook_server.service;
 
-import ada.divercity.diverbook_server.dto.RegisterUserRequest;
-import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
-import ada.divercity.diverbook_server.dto.UpdateUserRequest;
-import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.dto.*;
 import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.User;
 import ada.divercity.diverbook_server.exception.CustomException;
@@ -61,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public UserDto deactivateUser(UUID id) {
+    public UserDto deactivateUser(UUID id, DeactivateRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         user.setDivisions(null);
@@ -72,6 +69,10 @@ public class UserServiceImpl implements UserService {
         user.setIsActivated(false);
 
         passwordRepository.deleteByUserId(id);
+
+        if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+            tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
+        }
 
         return UserDto.fromEntity(userRepository.save(user));
     }
