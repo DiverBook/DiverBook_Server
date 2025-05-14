@@ -14,4 +14,6 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
     boolean existsByOwnerIdAndFoundUserId(UUID ownerId, UUID foundUserId);
 
     Collection findByOwnerIdAndFoundUserId(UUID ownerId, UUID foundUserId);
+
+    void deleteByOwnerId(UUID ownerId);
 }
