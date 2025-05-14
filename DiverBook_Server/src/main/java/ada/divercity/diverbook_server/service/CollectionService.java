@@ -12,4 +12,6 @@ public interface CollectionService {
     public List<CollectionDto> getAllCollections(UUID ownerId);
 
     public CollectionDto patchCollection(UUID id, CollectionRequest request);
+
+    public void deleteAllCollections(UUID ownerId);
 }

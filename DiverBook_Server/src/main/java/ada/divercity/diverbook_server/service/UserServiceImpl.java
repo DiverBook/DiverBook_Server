@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordRepository passwordRepository;
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CollectionService collectionService;
 
     public UserDto createUser(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
@@ -73,6 +74,8 @@ public class UserServiceImpl implements UserService {
         if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
             tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
         }
+
+        collectionService.deleteAllCollections(user.getId());
 
         return UserDto.fromEntity(userRepository.save(user));
     }
