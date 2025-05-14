@@ -1,9 +1,6 @@
 package ada.divercity.diverbook_server.service;
 
-import ada.divercity.diverbook_server.dto.RegisterUserRequest;
-import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
-import ada.divercity.diverbook_server.dto.UpdateUserRequest;
-import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.dto.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
@@ -14,7 +11,7 @@ public interface UserService {
 
     public UserDto activateUser(RegisterUserRequest request);
 
-    public UserDto deactivateUser(UUID id);
+    public UserDto deactivateUser(UUID id, DeactivateRequest request);
 
     public Boolean getUserActivationStatusByName(String userName);
 
