@@ -62,6 +62,14 @@ public class UserServiceImpl implements UserService {
     public UserDto deactivateUser(UUID id, DeactivateRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
+        if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+            String tokenUserId = jwtTokenProvider.validateRefreshTokenAndGetUserId(request.getRefreshToken());
+            if (!tokenUserId.equals(user.getId().toString())) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
+            }
+            tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
+        }
+
         user.setDivisions(null);
         user.setPhoneNumber(null);
         user.setInterests(null);
@@ -70,10 +78,6 @@ public class UserServiceImpl implements UserService {
         user.setIsActivated(false);
 
         passwordRepository.deleteByUserId(id);
-
-        if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
-            tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
-        }
 
         collectionService.deleteAllCollections(user.getId());
 
@@ -163,8 +167,15 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
 
+        if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+            String tokenUserId = jwtTokenProvider.validateRefreshTokenAndGetUserId(request.getRefreshToken());
+            if (!tokenUserId.equals(id.toString())) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
+            }
+            tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
+        }
+
         password.setPassword(encodePassword(request.getNewPassword()));
-        tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(password.getUserId().toString());
 
