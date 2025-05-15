@@ -58,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponse reissueAccessToken(String refreshToken) {
         try {
-            String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+            String userId = jwtTokenProvider.validateRefreshTokenAndGetUserId(refreshToken);
 
             String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
             String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
@@ -88,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponse logout(String refreshToken) {
         try {
-            String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+            String userId = jwtTokenProvider.validateRefreshTokenAndGetUserId(refreshToken);
 
             tokenBlackListRepository.save(TokenBlackList.builder().token(refreshToken).build());
 

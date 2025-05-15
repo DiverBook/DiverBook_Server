@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             System.out.println(request.getHeader("Authorization"));
             try {
-                String userId = jwtTokenProvider.validateAndGetUserId(token);
+                String userId = jwtTokenProvider.validateAccessTokenAndGetUserId(token);
                 if (userId != null) {
                     // Convert the userId string to UUID
                     UUID userUuid = UUID.fromString(userId);
