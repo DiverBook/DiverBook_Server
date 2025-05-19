@@ -79,8 +79,6 @@ public class UserServiceImpl implements UserService {
 
         passwordRepository.deleteByUserId(id);
 
-        collectionService.deleteAllCollections(user.getId());
-
         return UserDto.fromEntity(userRepository.save(user));
     }
 
