@@ -1,5 +1,6 @@
 package ada.divercity.diverbook_server.controller;
 
+import ada.divercity.diverbook_server.dto.ApiResponse;
 import ada.divercity.diverbook_server.dto.CollectionDto;
 import ada.divercity.diverbook_server.dto.CollectionRequest;
 import ada.divercity.diverbook_server.service.CollectionService;
@@ -34,17 +35,6 @@ public class CollectionController {
     ) {
         UUID userId = UUID.fromString(authentication.getName());
         return ResponseEntity.ok(collectionService.getAllCollections(userId));
-    }
-
-    @PatchMapping
-    public ResponseEntity<ApiResponse<CollectionDto>> patchCollection(
-            @RequestBody CollectionRequest request,
-            Authentication authentication
-    ) {
-        UUID userId = UUID.fromString(authentication.getName());
-
-        CollectionDto collection = collectionService.patchCollection(userId, request);
-        return ResponseEntity.ok(ApiResponse.success(collection));
     }
 
     @PatchMapping
