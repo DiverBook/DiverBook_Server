@@ -18,7 +18,7 @@ public class UserBadgeDto {
     private Badge badge;
     private LocalDateTime acquiredDate;
 
-    public UserBadgeDto fromEntity(UserBadge userBadge) {
+    static public UserBadgeDto fromEntity(UserBadge userBadge) {
         return UserBadgeDto.builder()
                 .id(userBadge.getId())
                 .user(userBadge.getUser())
