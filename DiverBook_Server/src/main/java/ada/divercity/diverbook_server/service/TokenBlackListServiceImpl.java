@@ -5,6 +5,8 @@ import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class TokenBlackListServiceImpl implements TokenBlackListService {
@@ -12,7 +14,11 @@ public class TokenBlackListServiceImpl implements TokenBlackListService {
     private final TokenBlackListRepository tokenBlackListRepository;
 
     public void addTokenToBlackList(String token) {
-        TokenBlackList newBlackList = TokenBlackList.builder().token(token).build();
+        TokenBlackList newBlackList = TokenBlackList
+                .builder()
+                .token(token)
+                .invalidAt(LocalDateTime.now())
+                .build();
         tokenBlackListRepository.save(newBlackList);
     }
 
