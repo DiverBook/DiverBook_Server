@@ -76,7 +76,7 @@ public class CollectionServiceImpl implements CollectionService {
 
         return CollectionDto.fromEntity(savedCollection);
     }
-
+  
     public void deleteAllCollections(UUID ownerId) {
         User owner = userRepository.findById(ownerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
