@@ -73,15 +73,12 @@ public class JwtTokenProvider {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String validateAndGetUserId(String token) {
+    public String validateAccessTokenAndGetUserId(String accessToken) {
         try {
-            if (tokenBlackListService.isTokenBlackListed(token)) {
-                throw new CustomException(ErrorCode.EXPIRED_TOKEN);
-            }
             return Jwts.parser()
                     .verifyWith((SecretKey) key)
                     .build()
-                    .parseSignedClaims(token)
+                    .parseSignedClaims(accessToken)
                     .getPayload()
                     .getId();
         } catch (ExpiredJwtException e) {
@@ -91,20 +88,19 @@ public class JwtTokenProvider {
         }
     }
 
-    public TokenValidationStatus validateToken(String token) {
+    public String validateRefreshTokenAndGetUserId(String refreshToken) {
         try {
-            if (tokenBlackListService.isTokenBlackListed(token)) {
-                return TokenValidationStatus.EXPIRED;
+            if (tokenBlackListService.isTokenBlackListed(refreshToken)) {
+                throw new CustomException(ErrorCode.EXPIRED_TOKEN);
             }
-            Jwts.parser()
+            return Jwts.parser()
                     .verifyWith((SecretKey) key)
                     .build()
-                    .parseSignedClaims(token);
-            return TokenValidationStatus.VALID;
+                    .parseSignedClaims(refreshToken)
+                    .getPayload()
+                    .getId();
         } catch (ExpiredJwtException e) {
-            return TokenValidationStatus.EXPIRED;
-        } catch (JwtException e) {
-            return TokenValidationStatus.INVALID;
+            throw new CustomException(ErrorCode.EXPIRED_TOKEN);
         }
     }
 }

@@ -1,9 +1,6 @@
 package ada.divercity.diverbook_server.service;
 
-import ada.divercity.diverbook_server.dto.RegisterUserRequest;
-import ada.divercity.diverbook_server.dto.ChangePasswordRequest;
-import ada.divercity.diverbook_server.dto.UpdateUserRequest;
-import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.dto.*;
 import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.User;
 import ada.divercity.diverbook_server.exception.CustomException;
@@ -12,6 +9,7 @@ import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordRepository passwordRepository;
     private final TokenBlackListService tokenBlackListService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CollectionService collectionService;
 
     public UserDto createUser(RegisterUserRequest request) {
         if (userRepository.findByUserName(request.getUserName()).isPresent()) {
@@ -60,8 +59,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public UserDto deactivateUser(UUID id) {
+    public UserDto deactivateUser(UUID id, DeactivateRequest request) {
         User user = userRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+            String tokenUserId = jwtTokenProvider.validateRefreshTokenAndGetUserId(request.getRefreshToken());
+            if (!tokenUserId.equals(user.getId().toString())) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
+            }
+            tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
+        }
 
         user.setDivisions(null);
         user.setPhoneNumber(null);
@@ -86,7 +93,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll(Sort.by(Sort.Direction.ASC, "userName"));
         return users.stream()
                 .map(UserDto::fromEntity)
                 .toList();
@@ -126,7 +133,7 @@ public class UserServiceImpl implements UserService {
             user.setAbout(request.getAbout());
         }
 
-        return convertToDto(userRepository.save(user));
+        return UserDto.fromEntity(userRepository.save(user));
     }
 
     public Boolean addNewPassword(UUID id, String rawPassword) {
@@ -158,8 +165,15 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
 
+        if (request.getRefreshToken() != null && !request.getRefreshToken().isEmpty()) {
+            String tokenUserId = jwtTokenProvider.validateRefreshTokenAndGetUserId(request.getRefreshToken());
+            if (!tokenUserId.equals(id.toString())) {
+                throw new CustomException(ErrorCode.INVALID_TOKEN);
+            }
+            tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
+        }
+
         password.setPassword(encodePassword(request.getNewPassword()));
-        tokenBlackListService.addTokenToBlackList(request.getRefreshToken());
 
         String refreshToken = jwtTokenProvider.generateRefreshToken(password.getUserId().toString());
 
@@ -175,18 +189,5 @@ public class UserServiceImpl implements UserService {
 
         return new BCryptPasswordEncoder().encode(rawPassword);
     }
-
-    private UserDto convertToDto(User user) {
-        return UserDto.builder()
-                .id(user.getId())
-                .userName(user.getUserName())
-                .divisions(user.getDivisions())
-                .phoneNumber(user.getPhoneNumber())
-                .interests(user.getInterests())
-                .places(user.getPlaces())
-                .about(user.getAbout())
-                .profileImageUrl(user.getProfileImageUrl())
-                .build();
-    }
-
+  
 }

@@ -75,9 +75,10 @@ public class UserController {
     @SecurityRequirement(name = "JWT")
     @PostMapping("/me/deactivate")
     public ResponseEntity<ApiResponse<UserDto>> deactivateUser(
+            @RequestBody DeactivateRequest request,
             @AuthenticationPrincipal UUID userId
     ) {
-        UserDto updated = userService.deactivateUser(userId);
+        UserDto updated = userService.deactivateUser(userId, request);
         return ResponseEntity.ok(ApiResponse.success(updated));
     }
 

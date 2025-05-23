@@ -9,7 +9,6 @@ import lombok.*;
 @Builder
 public class UpdateUserRequest {
     private String userName;
-    private String userImage;
     private String divisions;
     private String phoneNumber;
     private String interests;

@@ -3,7 +3,7 @@ package ada.divercity.diverbook_server.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -22,5 +22,5 @@ public class TokenBlackList {
     private String token;
 
     @Column
-    private Timestamp invalidAt;
+    private LocalDateTime invalidAt;
 }

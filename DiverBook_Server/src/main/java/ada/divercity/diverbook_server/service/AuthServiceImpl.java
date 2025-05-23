@@ -1,9 +1,6 @@
 package ada.divercity.diverbook_server.service;
 
-import ada.divercity.diverbook_server.dto.AuthRequest;
-import ada.divercity.diverbook_server.dto.AuthResponse;
-import ada.divercity.diverbook_server.dto.RegisterUserRequest;
-import ada.divercity.diverbook_server.dto.UserDto;
+import ada.divercity.diverbook_server.dto.*;
 import ada.divercity.diverbook_server.entity.Password;
 import ada.divercity.diverbook_server.entity.TokenBlackList;
 import ada.divercity.diverbook_server.entity.User;
@@ -13,7 +10,6 @@ import ada.divercity.diverbook_server.repository.PasswordRepository;
 import ada.divercity.diverbook_server.repository.TokenBlackListRepository;
 import ada.divercity.diverbook_server.repository.UserRepository;
 import ada.divercity.diverbook_server.security.JwtTokenProvider;
-import ada.divercity.diverbook_server.security.TokenValidationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -48,20 +44,21 @@ public class AuthServiceImpl implements AuthService {
 
         UserDto newUserDto = userService.activateUser(request);
         Boolean isAdded = userService.addNewPassword(user.get().getId(), request.getPassword());
-        if (!isAdded) {
-            userService.deactivateUser(user.get().getId());
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
 
         String accessToken = jwtTokenProvider.generateAccessToken(newUserDto.getId().toString());
         String refreshToken = jwtTokenProvider.generateRefreshToken(newUserDto.getId().toString());
+
+        if (!isAdded) {
+            userService.deactivateUser(user.get().getId(), null);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
 
         return new AuthResponse(newUserDto.getId(), accessToken, refreshToken);
     }
 
     public AuthResponse reissueAccessToken(String refreshToken) {
         try {
-            String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+            String userId = jwtTokenProvider.validateRefreshTokenAndGetUserId(refreshToken);
 
             String newAccessToken = jwtTokenProvider.generateAccessToken(userId);
             String newRefreshToken = jwtTokenProvider.generateRefreshToken(userId);
@@ -91,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponse logout(String refreshToken) {
         try {
-            String userId = jwtTokenProvider.validateAndGetUserId(refreshToken);
+            String userId = jwtTokenProvider.validateRefreshTokenAndGetUserId(refreshToken);
 
             tokenBlackListRepository.save(TokenBlackList.builder().token(refreshToken).build());
 
