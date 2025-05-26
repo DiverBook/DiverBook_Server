@@ -4,6 +4,7 @@ import ada.divercity.diverbook_server.dto.ApiResponse;
 import ada.divercity.diverbook_server.dto.BadgeDto;
 import ada.divercity.diverbook_server.service.BadgeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,9 +19,9 @@ public class BadgeController {
     private final BadgeService badgeService;
 
     @GetMapping
-    public ApiResponse<List<BadgeDto>> getAllBadges() {
+    public ResponseEntity<ApiResponse<List<BadgeDto>>> getAllBadges() {
         List<BadgeDto> badges = badgeService.getAllBadges();
-        return ApiResponse.success(badges);
+        return ResponseEntity.ok(ApiResponse.success(badges));
     }
 
 }

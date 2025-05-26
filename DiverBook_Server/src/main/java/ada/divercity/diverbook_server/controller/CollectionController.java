@@ -21,20 +21,20 @@ public class CollectionController {
     private final CollectionService collectionService;
 
     @PostMapping
-    public ResponseEntity<CollectionDto> createCollection(
+    public ResponseEntity<ApiResponse<CollectionDto>> createCollection(
             @RequestBody CollectionRequest request,
             Authentication authentication
     ) {
         UUID userId = UUID.fromString(authentication.getName());
-        return ResponseEntity.ok(collectionService.createCollection(userId, request));
+        return ResponseEntity.ok(ApiResponse.success(collectionService.createCollection(userId, request)));
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<CollectionDto>> getAllCollections(
+    public ResponseEntity<ApiResponse<Iterable<CollectionDto>>> getAllCollections(
             Authentication authentication
     ) {
         UUID userId = UUID.fromString(authentication.getName());
-        return ResponseEntity.ok(collectionService.getAllCollections(userId));
+        return ResponseEntity.ok(ApiResponse.success(collectionService.getAllCollections(userId)));
     }
 
     @PatchMapping
